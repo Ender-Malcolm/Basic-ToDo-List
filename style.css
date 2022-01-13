@@ -15,3 +15,7 @@ body {
 #title {
   text-decoration: underline;
 }
+#netWarning {
+  color:maroon;
+  text-decoration:underline;
+}

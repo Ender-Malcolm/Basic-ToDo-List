@@ -10,7 +10,13 @@
 
   </head>
   <body>
-    <div id="app" x-data="todos()">
+
+    <div id="app" x-data="todos()" x-init = "init()">
+
+      <h1 id="netWarning">No Internet</h1>
+
+
+
       <h1 id="title">Nathan's ToDo List</h1>
       <form @submit.prevent="addNewTask()">
           <input placeholder = "Enter task here..." type="text" x-model="task" />
@@ -23,14 +29,20 @@
                   <button class="btn btn-outline-danger" @click="removeTask(todo.id)" >Delete</button>
               </li>
           </template>
+
+    <button @click="saveToLocalStorage()"> Save to Local Storage </button>
+    <button @click="readFromLocalStorage()"> Read from Local Storage </button>
+    <button @click="clearAllFromLocalStorage()"> Clear All from Local Storage </button>
+
   </div>
     <script type="module" src="/main.js"></script>
     
     <script> function todos() {
       return {
           //data
-          increment: 11,
+          increment: 6,
           task: '',
+          online: false,
           todos: [
              {
                  id: 1,
@@ -40,12 +52,12 @@
              {
                  id: 2,
                  task: 'Local Storage of Tasks',
-                 isComplete: false
+                 isComplete: true
              },
              {
                  id: 3,
                  task: 'Edit ToDo Items',
-                 isComplete: false
+                 isComplete: true
              },
              {
                  id: 4,
@@ -58,16 +70,45 @@
                  isComplete: false
              },
          ],
+
+         init() {
+           //update todos from localStorage
+           this.readFromLocalStorage()
+
+           /*this.$watch(this.todos, () => {
+             value => console.log(value)
+             //this.saveToLocalStorage();
+           })*/
+         },
+
+         saveToLocalStorage() {
+          localStorage.setItem('toDos', JSON.stringify(this.todos));
+         },
+
+         readFromLocalStorage() {
+          const todos = JSON.parse(localStorage.getItem('toDos'));
+          if(todos) this.todos = todos
+         },
+
+         clearAllFromLocalStorage() {
+           localStorage.clear();
+         },
+
          addNewTask() {
             //Return if empty
             if (this.task.trim() === '') return;
             //Add new todo and clear task
             this.todos.push({
                 id: this.increment++,
+                //id: this.todos.,
+                //id: Math.max(this.todos.id),
                 task: this.task,
                 isComplete: false
             });
             this.task = '';
+
+            // persist data
+            this.saveToLocalStorage();
         },
         removeTask(todoToRemove) {
             this.todos = this.todos.filter(todo => todo.id != todoToRemove);
